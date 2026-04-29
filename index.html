@@ -1,173 +1,679 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<title>MIDI Arp Full Clock</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ARP — MIDI Arpeggiator</title>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #0a0a0c;
+  --panel: #111116;
+  --border: #1e1e28;
+  --accent: #c8ff00;
+  --accent2: #ff6b35;
+  --muted: #3a3a48;
+  --text: #e8e8f0;
+  --text-dim: #6a6a80;
+  --beat: #2a2a38;
+  --mono: 'Space Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  margin: 0;
-  font-family: sans-serif;
-  background: #0e0f12;
-  color: #eee;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px 10px 40px;
 }
 
 #app {
-  padding: 10px;
-  max-width: 480px;
-  margin: auto;
-}
-
-.row { display:flex; gap:6px; flex-wrap:wrap; }
-
-button, select, input {
-  background:#1c1f26;
-  color:white;
-  border:1px solid #333;
-  padding:6px 8px;
-  border-radius:6px;
-  font-size:12px;
-}
-
-button.active { background:#3b82f6; }
-
-.box {
-  background:#151821;
-  padding:8px;
-  border-radius:8px;
-  margin-bottom:8px;
-}
-
-.small { font-size:11px; opacity:.8; }
-
-.clock-square {
-  width: 18px;
-  height: 18px;
-  background: #222;
-  border-radius: 3px;
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 6px;
-}
-
-.clock-square .fill {
-  position: absolute;
-  bottom: 0;
   width: 100%;
-  background: #3b82f6;
-  transition: height 0.02s linear;
+  max-width: 460px;
 }
 
-.grid {
+/* Header */
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header h1 {
+  font-family: var(--mono);
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.header .subtitle {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.midi-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.midi-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: background 0.2s;
+}
+
+.midi-dot.on { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+/* Panels */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 8px;
+}
+
+.panel-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  margin-bottom: 10px;
+}
+
+/* MIDI row */
+.midi-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.midi-row select {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: var(--mono);
+  outline: none;
+  cursor: pointer;
+}
+
+.midi-row select:focus { border-color: var(--accent); }
+
+/* Chip button */
+.btn {
+  background: var(--bg);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn:hover { border-color: var(--muted); color: var(--text); }
+
+.btn.on {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.btn.on2 {
+  background: var(--accent2);
+  color: #000;
+  border-color: var(--accent2);
+  font-weight: 700;
+}
+
+/* Mode grid */
+.mode-grid {
   display: grid;
-  grid-template-columns: repeat(32, 1fr);
-  gap: 3px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.mode-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 8px 4px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.12s;
+  user-select: none;
+}
+
+.mode-btn:hover { border-color: var(--muted); color: var(--text); }
+
+.mode-btn.on {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* Division grid */
+.div-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+
+.div-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 2px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-family: var(--mono);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.1s;
+  user-select: none;
+}
+
+.div-btn:hover { border-color: var(--muted); }
+.div-btn.on { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+.div-btn.triplet { color: var(--accent2); }
+.div-btn.triplet.on { background: var(--accent2); color: #000; border-color: var(--accent2); }
+.div-btn.dotted { color: #88aaff; }
+.div-btn.dotted.on { background: #88aaff; color: #000; border-color: #88aaff; }
+
+.div-labels {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.div-label {
+  font-size: 8px;
+  font-family: var(--mono);
+  text-align: center;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+/* Tempo */
+.tempo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.bpm-display {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  min-width: 70px;
+}
+
+.bpm-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.bpm-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+
+.bpm-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* Signature */
+.sig-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.sig-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: all 0.1s;
+  user-select: none;
+}
+
+.sig-btn.on { background: var(--beat); color: var(--text); border-color: var(--muted); }
+
+/* Sequencer grid */
+.seq-wrap {
+  position: relative;
+}
+
+.seq-grid {
+  display: flex;
+  gap: 2px;
+  height: 20px;
+  align-items: stretch;
+}
+
+.seq-cell {
+  flex: 1;
+  border-radius: 2px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  transition: background 0.05s;
+  position: relative;
+}
+
+.seq-cell.beat-start {
+  border-color: var(--muted);
+}
+
+.seq-cell.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 4px var(--accent);
+}
+
+/* Bar progress bar */
+.bar-prog {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.bar-prog-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.04s linear;
+}
+
+/* Spinbox-style controls */
+.spin-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.spin-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.spin-label {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  padding: 0 8px;
+  background: var(--bg);
+  height: 28px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid var(--border);
+}
+
+.spin-btn {
+  background: var(--bg);
+  color: var(--text-dim);
+  border: none;
+  width: 26px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+}
+
+.spin-btn:hover { background: var(--beat); color: var(--text); }
+
+.spin-val {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 24px;
+  text-align: center;
+  background: var(--bg);
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+}
+
+/* Notes display */
+.notes-area {
+  min-height: 30px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.note-chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: var(--beat);
+  color: var(--text);
+  border: 1px solid var(--muted);
+  animation: pop 0.1s ease;
+}
+
+.note-chip.arp {
+  background: color-mix(in srgb, var(--accent) 15%, var(--bg));
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+}
+
+@keyframes pop {
+  from { transform: scale(0.85); opacity: 0.5; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Quantize info */
+.quant-info {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--mono);
   margin-top: 6px;
 }
 
-.cell {
-  height: 10px;
-  background: #222;
-  border-radius: 2px;
+.quant-info span {
+  color: var(--accent2);
 }
 
-.cell.active { background: #3b82f6; }
+/* Two cols */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
 
-.cell.beat {
-  border: 1px solid #444;
+/* Toggle row */
+.toggle-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Separator */
+.sep {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 0;
+}
+
+/* Free clock warning */
+.free-tag {
+  font-size: 9px;
+  color: var(--accent2);
+  font-family: var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.free-tag.show { opacity: 1; }
+
+/* Chord badge */
+.chord-badge {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  margin-left: 4px;
+}
+
+/* Playhead pulse */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+.running-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: pulse 1s infinite;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.stopped-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  margin-right: 5px;
+  vertical-align: middle;
 }
 </style>
 </head>
-
 <body>
+
 <div id="app">
 
-  <div class="box">
-    <div class="row">
-      <button @click="initMIDI">Init MIDI</button>
+  <!-- Header -->
+  <div class="header">
+    <h1>ARP</h1>
+    <div class="subtitle">MIDI Arpeggiator</div>
+    <div class="midi-status">
+      <div class="midi-dot" :class="{on: midi.access}"></div>
+      MIDI
+    </div>
+  </div>
 
+  <!-- MIDI I/O -->
+  <div class="panel">
+    <div class="panel-label">MIDI</div>
+    <div class="midi-row">
+      <button class="btn" @click="initMIDI">Init</button>
       <select v-model="midi.inId">
-        <option v-for="i in inputs" :value="i.id">{{i.name}}</option>
+        <option v-for="i in inputs" :value="i.id">↓ {{i.name}}</option>
+        <option v-if="!inputs.length" :value="null">— no input —</option>
       </select>
-
       <select v-model="midi.outId">
-        <option v-for="o in outputs" :value="o.id">{{o.name}}</option>
+        <option v-for="o in outputs" :value="o.id">↑ {{o.name}}</option>
+        <option v-if="!outputs.length" :value="null">— no output —</option>
       </select>
     </div>
   </div>
 
-  <div class="box">
-    <div class="row">
-      <button v-for="m in modes"
-              :class="{active: arp.mode===m}"
-              @click="arp.mode=m">
-        {{m}}
-      </button>
+  <!-- Clock / Tempo -->
+  <div class="panel">
+    <div class="panel-label">
+      <span v-if="scheduler.running"><span class="running-dot"></span>Running</span>
+      <span v-else><span class="stopped-dot"></span>Stopped</span>
+      <span class="free-tag" :class="{show: freeClock}"> · free clock</span>
     </div>
 
-    <div class="row" style="margin-top:6px">
+    <div class="tempo-row">
+      <div>
+        <div class="bpm-display">{{arp.bpm}}</div>
+        <div class="bpm-sub">BPM</div>
+      </div>
+      <input type="range" class="bpm-slider" min="40" max="240" v-model.number="arp.bpm"/>
+    </div>
+
+    <!-- Signature -->
+    <div class="sig-row">
+      <button v-for="s in signatures"
+              class="sig-btn"
+              :class="{on: arp.signature===s}"
+              @click="arp.signature=s">{{s}}</button>
+    </div>
+
+    <!-- Bar progress -->
+    <div class="bar-prog">
+      <div class="bar-prog-fill" :style="{width: (barProgress*100)+'%'}"></div>
+    </div>
+
+    <!-- Sequencer grid -->
+    <div class="seq-grid">
+      <div v-for="i in displaySteps"
+           :key="i"
+           :class="{
+             'seq-cell': true,
+             'active': (i-1) === (arp.stepIndex % displaySteps),
+             'beat-start': (i-1) % stepsPerBeatDisplay === 0
+           }">
+      </div>
+    </div>
+
+    <!-- Quant info -->
+    <div class="quant-info" v-if="quantizedLength !== null">
+      cycle quantisé sur <span>{{quantizedLength}} pas</span>
+      → boucle sur <span>{{beatsPerBar}} temps</span>
+    </div>
+
+  </div>
+
+  <!-- Division -->
+  <div class="panel">
+    <div class="panel-label">Division</div>
+    <div class="div-labels">
+      <div class="div-label">—</div>
+      <div class="div-label" style="color:var(--accent2)">3</div>
+      <div class="div-label" style="color:#88aaff">.</div>
+    </div>
+    <div class="div-grid">
       <button v-for="d in divisions"
-              :class="{active: arp.division===d}"
+              :class="['div-btn', divType(d), {on: arp.division===d}]"
               @click="arp.division=d">
         {{d}}
       </button>
     </div>
   </div>
 
-  <div class="box">
-
-    <div class="row">
-      <input type="range" min="40" max="200" v-model="arp.bpm"/>
-      <div>{{arp.bpm}} BPM</div>
+  <!-- Mode -->
+  <div class="panel">
+    <div class="panel-label">Mode</div>
+    <div class="mode-grid">
+      <button v-for="m in modes"
+              class="mode-btn"
+              :class="{on: arp.mode===m}"
+              @click="arp.mode=m">
+        {{m}}<span v-if="m==='chord'" class="chord-badge">∥</span>
+      </button>
     </div>
 
-    <div class="row">
-      <select v-model="arp.signature">
-        <option v-for="s in signatures">{{s}}</option>
-      </select>
-    </div>
+    <div class="sep"></div>
 
-    <div class="clock-square">
-      <div class="fill" :style="{height: (barProgress*100)+'%'}"></div>
-    </div>
-
-    <div class="grid">
-      <div v-for="i in stepsPerBar"
-           :key="i"
-           :class="{
-             cell: true,
-             active: (i-1) === (arp.stepIndex % stepsPerBar),
-             beat: (i-1) % stepsPerBeat === 0
-           }">
+    <!-- Octaves & Repeat -->
+    <div class="spin-row">
+      <div class="spin-group">
+        <div class="spin-label">OCT</div>
+        <button class="spin-btn" @click="clamp('octaves',-1,1,4)">−</button>
+        <div class="spin-val">{{arp.octaves}}</div>
+        <button class="spin-btn" @click="clamp('octaves',+1,1,4)">+</button>
+      </div>
+      <div class="spin-group">
+        <div class="spin-label">RPT</div>
+        <button class="spin-btn" @click="clamp('repeat',-1,1,8)">−</button>
+        <div class="spin-val">{{arp.repeat}}</div>
+        <button class="spin-btn" @click="clamp('repeat',+1,1,8)">+</button>
       </div>
     </div>
 
   </div>
 
-  <div class="box">
-    <div class="row">
-      <button :class="{active: hold}" @click="toggleHold">HOLD</button>
-      <button :class="{active: holdMode==='overwrite'}" @click="toggleHoldMode">
+  <!-- Options -->
+  <div class="panel">
+    <div class="panel-label">Options</div>
+    <div class="toggle-row">
+      <button class="btn" :class="{on: hold}" @click="toggleHold">HOLD</button>
+      <button class="btn" :class="{on: hold && holdMode==='overwrite', on2: hold && holdMode==='accumulate'}"
+              @click="toggleHoldMode">
         {{holdMode}}
       </button>
-    </div>
-
-    <div class="row">
-      <button :class="{active: soundOn}" @click="soundOn=!soundOn">sound</button>
-      <button :class="{active: freeClock}" @click="freeClock=!freeClock">free clock</button>
+      <button class="btn" :class="{on: soundOn}" @click="soundOn=!soundOn">♪ SOUND</button>
+      <button class="btn" :class="{on: freeClock}" @click="toggleFreeClock">FREE</button>
+      <button class="btn" :class="{on: midiSync}" @click="toggleMidiSync">
+        SYNC<span v-if="midiSync && midiBpm"> {{midiBpm}}</span>
+      </button>
     </div>
   </div>
 
-  <div class="box">
-    <div class="small">IN</div>
-    <div>
-      <span v-for="n in activeNotes">{{noteName(n)}} </span>
+  <!-- Notes -->
+  <div class="panel">
+    <div class="panel-label" style="margin-bottom:6px">IN</div>
+    <div class="notes-area">
+      <div class="note-chip" v-for="n in activeNotes" :key="n">{{noteName(n)}}</div>
+      <div v-if="!activeNotes.length" style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">—</div>
     </div>
-
-    <div class="small">ARP</div>
-    <div>
-      <span v-for="n in heldNotes">{{noteName(n)}} </span>
+    <div class="sep"></div>
+    <div class="panel-label" style="margin-bottom:6px">ARP</div>
+    <div class="notes-area">
+      <div class="note-chip arp" v-for="n in heldNotes" :key="n">{{noteName(n)}}</div>
+      <div v-if="!heldNotes.length" style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">—</div>
     </div>
   </div>
 
@@ -179,29 +685,37 @@ const { createApp } = Vue;
 createApp({
   data() {
     return {
-
       midi: { inId:null, outId:null, access:null },
-
       inputs: [],
       outputs: [],
 
       activeNotes: [],
       heldNotes: [],
 
-      hold: false,
+      // Chord buffer : on attend CHORD_WAIT ms après la dernière note-on
+      // avant de valider l'accord et de repartir du step 0
+      _chordTimer: null,
+      CHORD_WAIT: 20,   // ms
+
+      midiSync: false,
+      midiBpm: null,
+      _midiClockTimes: [],   // timestamps des derniers ticks pour calculer le BPM
       holdMode: "accumulate",
       freeClock: false,
-      soundOn: true,
+      soundOn: false,
 
       modes: ["up","down","updown","random","order","chord"],
 
+      // Divisions groupées : straight | triplet | dotted
       divisions: [
-        "1/4","1/8","1/16","1/32","1/64",
-        "1/4t","1/8t","1/16t","1/32t","1/64t",
-        "1/4.","1/8.","1/16.","1/32.","1/64."
+        "1/4","1/4t","1/4.",
+        "1/8","1/8t","1/8.",
+        "1/16","1/16t","1/16.",
+        "1/32","1/32t","1/32.",
+        "1/64","1/64t","1/64."
       ],
 
-      signatures: ["4/4","3/4","5/4","7/4"],
+      signatures: ["4/4","3/4","5/4","7/4","6/8"],
 
       arp: {
         mode:"up",
@@ -213,6 +727,14 @@ createApp({
         repeat: 1
       },
 
+      _wakeLock: null,
+
+      // snapshot validé après le buffer — c'est ce que l'arp joue vraiment
+      chordSnapshot: [],
+      // true pendant le buffer : le clock tourne mais joue le snapshot précédent
+      waitingForChord: false,
+      _rafId: null,
+
       scheduler: {
         running:false,
         barStart:0,
@@ -223,77 +745,111 @@ createApp({
   },
 
   computed: {
-
     beatsPerBar() {
-      return parseInt(this.arp.signature.split("/")[0]);
+      const sig = this.arp.signature;
+      if (sig === "6/8") return 2; // 6/8 → 2 temps composés
+      return parseInt(sig.split("/")[0]);
     },
 
-    stepsPerBeat() {
-      const map = {
-        "1/4": 1,
-        "1/8": 2,
-        "1/16": 4,
-        "1/32": 8,
-        "1/64": 16,
-        "1/4t": 1.5,
-        "1/8t": 3,
-        "1/16t": 6,
-        "1/32t": 12,
-        "1/64t": 24,
-        "1/4.": 1.5,
-        "1/8.": 3,
-        "1/16.": 6,
-        "1/32.": 12,
-        "1/64.": 24
-      };
-      return map[this.arp.division];
+    // Durée d'un beat en ms
+    beatDuration() {
+      const sig = this.arp.signature;
+      const base = 60000 / this.arp.bpm;
+      if (sig === "6/8") return base * 1.5; // noire pointée
+      return base;
     },
 
-    stepsPerBar() {
-      return this.beatsPerBar * this.stepsPerBeat;
+    // Combien de steps par beat (toujours entier)
+    stepsPerBeatDisplay() {
+      const div = this.arp.division;
+      const straight = { "1/4":1,"1/8":2,"1/16":4,"1/32":8,"1/64":16 };
+      // Pour les triplets et pointés on retourne la valeur straight la plus proche
+      const base = div.replace("t","").replace(".","");
+      return straight[base] || 4;
     },
 
-    barProgress() {
-      const now = performance.now();
-      const duration = this.barDuration;
-      return ((now - this.scheduler.barStart) % duration) / duration;
+    displaySteps() {
+      return this.beatsPerBar * this.stepsPerBeatDisplay;
     },
 
     barDuration() {
-      const beat = 60000 / this.arp.bpm;
-      return beat * this.beatsPerBar;
-    }
+      return this.beatDuration * this.beatsPerBar;
+    },
 
+    barProgress() {
+      return this.barProgressValue;
+    },
+
+    // Quantize: si on a N notes, on les aligne sur un multiple de beatsPerBar
+    quantizedLength() {
+      const n = this.heldNotes.length || this.activeNotes.length;
+      if (!n) return null;
+      const beats = this.beatsPerBar;
+      // On calcule la taille réelle du pattern avec octaves/repeat
+      const base = this.pickNotes([...(this.heldNotes.length ? this.heldNotes : this.activeNotes)]);
+      const len = base.length;
+      if (len === 0) return null;
+      // multiple de beats le plus proche ≥ len
+      const mult = Math.ceil(len / beats) * beats;
+      return mult;
+    }
   },
 
   mounted() {
     this.initMIDI();
+    this.startRAF();
+    if (!this.freeClock) {
+      this.startClock();
+    }
+    this.acquireWakeLock();
+  },
+
+  beforeUnmount() {
+    if (this._rafId) cancelAnimationFrame(this._rafId);
+    if (this._wakeLock) this._wakeLock.release();
   },
 
   watch: {
-    "arp.division"() {
-      this.resyncClock();
-    }
+    "arp.division"() { this.resyncClock(); },
+    "arp.bpm"() { this.resyncClock(); }
   },
 
   methods: {
 
-    applyOctaves(notes) {
-      const result = [];
-      const oct = Math.max(1, this.arp.octaves || 1);
-
-      for (let i = 0; i < oct; i++) {
-        const shift = i * 12;
-        result.push(...notes.map(n => n + shift));
-      }
-      return result;
+    // RAF pour barProgress réactif
+    async acquireWakeLock() {
+      if (!('wakeLock' in navigator)) return;
+      try {
+        this._wakeLock = await navigator.wakeLock.request('screen');
+        // Re-acquiert si la page redevient visible (ex: retour d'onglet)
+        document.addEventListener('visibilitychange', async () => {
+          if (document.visibilityState === 'visible') {
+            try { this._wakeLock = await navigator.wakeLock.request('screen'); } catch {}
+          }
+        });
+      } catch {}
     },
 
-    applyRepeat(notes) {
-      const rep = Math.max(1, this.arp.repeat || 1);
-      let out = [];
-      for (let i = 0; i < rep; i++) out = out.concat(notes);
-      return out;
+    startRAF() {
+      const tick = () => {
+        if (this.scheduler.running) {
+          const now = performance.now();
+          const dur = this.barDuration;
+          this.barProgressValue = ((now - this.scheduler.barStart) % dur) / dur;
+        }
+        this._rafId = requestAnimationFrame(tick);
+      };
+      this._rafId = requestAnimationFrame(tick);
+    },
+
+    clamp(key, delta, min, max) {
+      this.arp[key] = Math.min(max, Math.max(min, this.arp[key] + delta));
+    },
+
+    divType(d) {
+      if (d.includes("t")) return "triplet";
+      if (d.includes(".")) return "dotted";
+      return "";
     },
 
     noteName(n) {
@@ -302,18 +858,17 @@ createApp({
     },
 
     async initMIDI() {
-      const access = await navigator.requestMIDIAccess();
-      this.midi.access = access;
-
-      this.inputs = [...access.inputs.values()].map(i=>({id:i.id,name:i.name}));
-      this.outputs = [...access.outputs.values()].map(o=>({id:o.id,name:o.name}));
-
-      if (this.inputs.length) this.midi.inId = this.inputs[0].id;
-      if (this.outputs.length) this.midi.outId = this.outputs[0].id;
-
-      access.inputs.forEach(input=>{
-        input.onmidimessage = this.onMIDIIn;
-      });
+      try {
+        const access = await navigator.requestMIDIAccess();
+        this.midi.access = access;
+        this.inputs  = [...access.inputs.values()].map(i=>({id:i.id,name:i.name}));
+        this.outputs = [...access.outputs.values()].map(o=>({id:o.id,name:o.name}));
+        if (this.inputs.length)  this.midi.inId  = this.inputs[0].id;
+        if (this.outputs.length) this.midi.outId = this.outputs[0].id;
+        access.inputs.forEach(input => { input.onmidimessage = this.onMIDIIn; });
+      } catch(e) {
+        console.warn("MIDI access denied:", e);
+      }
     },
 
     getOut() {
@@ -324,24 +879,65 @@ createApp({
       const [status, note, vel] = e.data;
       const cmd = status & 0xf0;
 
-      if (cmd === 176) {
+      // === MIDI Clock (messages système, pas de canal) ===
+      if (this.midiSync) {
+        // 0xF8 = clock tick (24 ticks par noire)
+        if (status === 0xF8) {
+          this.onMidiClockTick();
+          return;
+        }
+        // 0xFA = start, 0xFB = continue
+        if (status === 0xFA || status === 0xFB) {
+          this._midiClockTimes = [];
+          this.resetClock();
+          if (!this.scheduler.running) this.startClock();
+          return;
+        }
+        // 0xFC = stop
+        if (status === 0xFC) {
+          this.stopClock();
+          return;
+        }
+      }
+
+      // Passe-through CC
+      if (cmd === 176 && note !== 64) {
         const out = this.getOut();
         if (out) out.send(e.data);
       }
 
+      // Note On
       if (cmd === 144 && vel > 0) {
+        // En overwrite : si c'est la première note d'un nouvel accord
+        // (aucune note n'était active avant), on vide l'ancien held
+        if (this.hold && this.holdMode === "overwrite" && this.activeNotes.length === 0) {
+          this.heldNotes = [];
+        }
         if (!this.activeNotes.includes(note)) this.activeNotes.push(note);
-
         if (this.hold) this.syncHoldNotes();
         else this.heldNotes = [...this.activeNotes];
+        this.armChordBuffer();
       }
 
+      // Note Off
       if (cmd === 128 || (cmd === 144 && vel === 0)) {
         this.activeNotes = this.activeNotes.filter(x => x !== note);
-
-        if (!this.hold) this.heldNotes = [...this.activeNotes];
+        if (!this.hold) {
+          this.heldNotes = [...this.activeNotes];
+          if (this.activeNotes.length === 0) {
+            // Plus aucune note → snapshot vide, arp s'arrête
+            this.chordSnapshot = [];
+            if (this._chordTimer) { clearTimeout(this._chordTimer); this._chordTimer = null; }
+            this.waitingForChord = false;
+          } else {
+            // Il reste des notes : on met à jour le snapshot immédiatement
+            // sans buffer — une note en moins doit être prise en compte tout de suite
+            this.chordSnapshot = [...this.activeNotes];
+          }
+        }
       }
 
+      // CC64 = sustain pédal → hold
       if (cmd === 176 && note === 64) {
         this.hold = vel > 63;
         if (!this.hold) this.clearHold();
@@ -352,6 +948,7 @@ createApp({
 
     syncHoldNotes() {
       if (this.holdMode === "overwrite") {
+        // Repart de zéro avec uniquement les notes physiquement enfoncées
         this.heldNotes = [...this.activeNotes].sort((a,b)=>a-b);
       } else {
         this.heldNotes = [...new Set([...this.heldNotes, ...this.activeNotes])];
@@ -360,6 +957,9 @@ createApp({
 
     clearHold() {
       this.heldNotes = [];
+      this.chordSnapshot = [];
+      if (this._chordTimer) { clearTimeout(this._chordTimer); this._chordTimer = null; }
+      this.waitingForChord = false;
     },
 
     toggleHold() {
@@ -368,13 +968,113 @@ createApp({
     },
 
     toggleHoldMode() {
-      this.holdMode = this.holdMode === "overwrite"
-        ? "accumulate"
-        : "overwrite";
+      this.holdMode = this.holdMode === "overwrite" ? "accumulate" : "overwrite";
+    },
+
+    armChordBuffer() {
+      // Annule le timer précédent si une autre note arrive dans la fenêtre
+      if (this._chordTimer) clearTimeout(this._chordTimer);
+      this.waitingForChord = true;
+
+      // En mode free sur le premier accord (snapshot vide), on valide
+      // immédiatement la première note pour que le clock parte sans délai.
+      // Le buffer reste actif pour les notes suivantes du même accord.
+      if (this.freeClock && this.chordSnapshot.length === 0) {
+        const src = this.hold ? this.heldNotes : this.activeNotes;
+        if (src.length) {
+          this.chordSnapshot = [...src];
+          this.arp.stepIndex = 0;
+          this.waitingForChord = false;
+          // On laisse quand même le timer tourner pour affiner l'accord
+          // si d'autres doigts arrivent dans les 20ms
+        }
+      }
+
+      this._chordTimer = setTimeout(() => {
+        let src;
+        if (this.hold) {
+          src = this.heldNotes;
+        } else {
+          src = this.activeNotes;
+        }
+        const snapshot = [...src];
+        if (!snapshot.length) {
+          this.waitingForChord = false;
+          this._chordTimer = null;
+          return;
+        }
+
+        const wasEmpty = this.chordSnapshot.length === 0;
+        this.chordSnapshot = snapshot;
+        if (wasEmpty) {
+          this.arp.stepIndex = 0;
+        }
+
+        this.waitingForChord = false;
+        this._chordTimer = null;
+      }, this.CHORD_WAIT);
+    },
+
+    toggleMidiSync() {
+      this.midiSync = !this.midiSync;
+      if (!this.midiSync) {
+        // Retour en mode interne : repart sur le BPM du slider
+        this._midiClockTimes = [];
+        this.midiBpm = null;
+        if (!this.scheduler.running && !this.freeClock) this.startClock();
+      } else {
+        // En attente du clock externe — on stoppe le clock interne
+        this.stopClock();
+        this._midiClockTimes = [];
+      }
+    },
+
+    onMidiClockTick() {
+      // MIDI clock = 24 ticks par noire (quarter note)
+      const now = performance.now();
+      this._midiClockTimes.push(now);
+
+      // On garde une fenêtre glissante de 24 ticks (= 1 noire) pour calculer le BPM
+      if (this._midiClockTimes.length > 24) {
+        this._midiClockTimes.shift();
+      }
+
+      // Calcul BPM dès qu'on a assez de ticks
+      if (this._midiClockTimes.length >= 4) {
+        const len = this._midiClockTimes.length;
+        const elapsed = this._midiClockTimes[len - 1] - this._midiClockTimes[0];
+        const tickInterval = elapsed / (len - 1);       // ms par tick
+        const beatInterval = tickInterval * 24;          // ms par noire
+        const bpm = Math.round(60000 / beatInterval);
+
+        if (bpm !== this.arp.bpm) {
+          this.arp.bpm = bpm;
+          this.midiBpm = bpm;
+          this.resyncClock();
+        }
+      }
+
+      // Démarre le clock interne si pas encore lancé
+      if (!this.scheduler.running) {
+        this.resetClock();
+        this.startClock();
+      }
+    },
+
+    toggleFreeClock() {
+      this.freeClock = !this.freeClock;
+      if (this.freeClock) {
+        // Passage en free : on stoppe si aucune note active
+        const hasNotes = this.activeNotes.length > 0 || this.heldNotes.length > 0;
+        if (!hasNotes) this.stopClock();
+      } else {
+        // Passage en non-free : le clock repart toujours
+        if (!this.scheduler.running) this.startClock();
+      }
     },
 
     updateClockGate() {
-      const hasNotes = this.activeNotes.length || this.heldNotes.length;
+      const hasNotes = this.activeNotes.length > 0 || this.heldNotes.length > 0;
 
       if (this.freeClock) {
         if (hasNotes && !this.scheduler.running) {
@@ -384,23 +1084,22 @@ createApp({
         if (!hasNotes && this.scheduler.running) {
           this.stopClock();
         }
-      } else if (!this.scheduler.running) {
-        this.startClock();
       }
+      // non-free : le clock tourne toujours, rien à faire ici
     },
 
     resetClock() {
       this.arp.stepIndex = 0;
-      this.scheduler.barStart = performance.now();
-      this.scheduler.startTime = performance.now();
+      this.scheduler.barStart   = performance.now();
+      this.scheduler.startTime  = performance.now();
       this.scheduler.lastStepIndex = -1;
     },
 
     startClock() {
       if (this.scheduler.running) return;
-
       this.scheduler.running = true;
       this.scheduler.startTime = performance.now();
+      this.scheduler.barStart  = performance.now();
       this.scheduler.lastStepIndex = -1;
 
       const tick = () => {
@@ -408,12 +1107,19 @@ createApp({
 
         const now = performance.now();
         const stepDur = this.stepDuration();
-
         const index = Math.floor((now - this.scheduler.startTime) / stepDur);
+
+        // Mise à jour barStart
+        const barDur = this.barDuration;
+        while (now - this.scheduler.barStart >= barDur) {
+          this.scheduler.barStart += barDur;
+        }
 
         while (this.scheduler.lastStepIndex < index) {
           this.scheduler.lastStepIndex++;
-          this.scheduleStep();
+          // Calcule le timestamp exact du step sur l'horloge performance
+          const stepTime = this.scheduler.startTime + this.scheduler.lastStepIndex * stepDur;
+          this.scheduleStep(stepTime);
         }
 
         requestAnimationFrame(tick);
@@ -424,89 +1130,172 @@ createApp({
 
     stopClock() {
       this.scheduler.running = false;
+      this.arp.stepIndex = 0;
     },
 
     resyncClock() {
       if (!this.scheduler.running) return;
-
       const now = performance.now();
       const stepDur = this.stepDuration();
-
       const index = Math.floor((now - this.scheduler.startTime) / stepDur);
-
       this.scheduler.startTime = now - index * stepDur;
       this.scheduler.lastStepIndex = index - 1;
     },
 
-    scheduleStep() {
-      const notesSource = this.heldNotes.length ? this.heldNotes : this.activeNotes;
-      if (!notesSource.length) return;
+    scheduleStep(stepTime) {
+      // Pendant le buffer : on joue le snapshot précédent s'il existe,
+      // sinon on attend silencieusement que l'accord soit validé
+      let src;
+      if (this.waitingForChord) {
+        if (this.chordSnapshot.length) src = this.chordSnapshot;
+        else return; // première frappe, pas encore de snapshot → silence bref
+      } else {
+        src = this.chordSnapshot.length ? this.chordSnapshot
+            : (this.heldNotes.length ? this.heldNotes : this.activeNotes);
+      }
+      if (!src.length) return;
 
-      const notes = this.pickNotes([...notesSource]);
+      const notes = this.pickNotes([...src]);
+      if (!notes.length) return;
+
+      // === QUANTIZATION SUR TIME SIGNATURE ===
+      // On aligne la longueur du pattern sur un multiple de stepsPerBar,
+      // puis on remplit les slots "extra" en rebouclant sur le pattern (pas de silence).
+      const beats = this.beatsPerBar;
+      const stpB  = this.stepsPerBeatDisplay;
+      const stepsPerBarCount = beats * stpB;
+      const rawLen = notes.length;
+      // taille du cycle quantisé (multiple de stepsPerBar ≥ rawLen)
+      const quantLen = Math.ceil(rawLen / stepsPerBarCount) * stepsPerBarCount;
+      // index dans le cycle quantisé
+      const idx = this.arp.stepIndex % quantLen;
+      // on boucle toujours sur le pattern → jamais de silence
+      const n = notes[idx % rawLen];
+
       const out = this.getOut();
-      const n = notes[this.arp.stepIndex % notes.length];
+      const dur = this.stepDuration();
+      const audioDelayMs = Math.max(0, stepTime - performance.now());
 
-      if (out && this.soundOn) {
-        out.send([144, n, 100]);
-        setTimeout(() => out.send([128, n, 0]), this.stepDuration()*0.8);
+      // chord : joue toutes les notes simultanément à chaque step
+      if (this.arp.mode === "chord") {
+        if (out) {
+          for (const cn of src) {
+            out.send([144, cn, 100]);
+            setTimeout(() => out.send([128, cn, 0]), dur * 0.8);
+          }
+        }
+        if (this.soundOn) {
+          for (const cn of src) this.playTone(cn, dur * 0.8, audioDelayMs);
+        }
+      } else {
+        if (out) {
+          out.send([144, n, 100]);
+          setTimeout(() => out.send([128, n, 0]), dur * 0.8);
+        }
+        if (this.soundOn) this.playTone(n, dur * 0.8, audioDelayMs);
       }
 
       this.arp.stepIndex++;
     },
 
+    // Web Audio — init lazy au premier clic (autoplay policy)
+    getAudioCtx() {
+      if (!this._audioCtx) {
+        this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Compresseur léger pour éviter la saturation sur les accords
+        this._compressor = this._audioCtx.createDynamicsCompressor();
+        this._compressor.connect(this._audioCtx.destination);
+      }
+      if (this._audioCtx.state === 'suspended') this._audioCtx.resume();
+      return this._audioCtx;
+    },
+
+    playTone(midiNote, durationMs, delayMs = 0) {
+      const ctx = this.getAudioCtx();
+      const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+      // On schedule dans le futur AudioContext — le thread JS n'attend rien
+      const start = ctx.currentTime + delayMs / 1000;
+      const dur   = durationMs / 1000;
+
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, start);
+
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.18, start + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+
+      osc.connect(gain);
+      gain.connect(this._compressor);
+
+      // start/stop sont des appels non-bloquants — le moteur audio les exécute
+      // dans son propre thread au bon moment
+      osc.start(start);
+      osc.stop(start + dur + 0.01);
+    },
+
     stepDuration() {
-      const base = 60000 / this.arp.bpm;
-
+      const beat = this.beatDuration;
       const map = {
-        "1/4":1,
-        "1/8":0.5,
-        "1/16":0.25,
-        "1/32":0.125,
-        "1/64":0.0625,
-        "1/4t": 2/3,
-        "1/8t": 1/3,
-        "1/16t": 1/6,
-        "1/32t": 1/12,
-        "1/64t": 1/24,
-        "1/4.": 1.5,
-        "1/8.": 0.75,
-        "1/16.": 0.375,
-        "1/32.": 0.1875,
-        "1/64.": 0.09375
+        "1/4":1,    "1/8":0.5,    "1/16":0.25,    "1/32":0.125,    "1/64":0.0625,
+        "1/4t":2/3, "1/8t":1/3,   "1/16t":1/6,    "1/32t":1/12,    "1/64t":1/24,
+        "1/4.":1.5, "1/8.":0.75,  "1/16.":0.375,  "1/32.":0.1875,  "1/64.":0.09375
       };
+      return beat * (map[this.arp.division] || 0.25);
+    },
 
-      return base * (map[this.arp.division] || 0.25);
+    applyOctaves(notes) {
+      const oct = Math.max(1, this.arp.octaves || 1);
+      const result = [];
+      for (let i = 0; i < oct; i++) {
+        const shift = i * 12;
+        result.push(...notes.map(n => Math.min(127, n + shift)));
+      }
+      return result;
+    },
+
+    applyRepeat(notes) {
+      const rep = Math.max(1, this.arp.repeat || 1);
+      // Intercale chaque note rep fois : C E G → C C E E G G (repeat 2)
+      const out = [];
+      for (const n of notes) {
+        for (let i = 0; i < rep; i++) out.push(n);
+      }
+      return out;
     },
 
     pickNotes(notes) {
       if (!notes.length) return [];
 
-      let base;
+      if (this.arp.mode === "chord") {
+        // chord est géré dans scheduleStep directement
+        return notes;
+      }
 
+      let base;
       switch(this.arp.mode) {
-        case "up": base = [...notes].sort((a,b)=>a-b); break;
-        case "down": base = [...notes].sort((a,b)=>b-a); break;
+        case "up":     base = [...notes].sort((a,b)=>a-b); break;
+        case "down":   base = [...notes].sort((a,b)=>b-a); break;
         case "random": base = [...notes].sort(()=>Math.random()-0.5); break;
-        case "order": base = notes; break;
+        case "order":  base = notes; break;
         case "updown": {
-          const up = [...notes].sort((a,b)=>a-b);
-          const down = [...up].reverse().slice(1,-1);
+          const up   = [...notes].sort((a,b)=>a-b);
+          const down = [...up].reverse().slice(1, -1);
           base = [...up, ...down];
           break;
         }
-        case "chord": base = notes; break;
         default: base = notes;
       }
 
       base = this.applyOctaves(base);
       base = this.applyRepeat(base);
-
       return base;
     }
 
   }
 }).mount("#app");
 </script>
-
 </body>
 </html>
