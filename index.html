@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>MIDI Arp Full Clock</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #0e0f12;
+  color: #eee;
+}
+
+#app {
+  padding: 10px;
+  max-width: 480px;
+  margin: auto;
+}
+
+.row { display:flex; gap:6px; flex-wrap:wrap; }
+
+button, select, input {
+  background:#1c1f26;
+  color:white;
+  border:1px solid #333;
+  padding:6px 8px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+button.active { background:#3b82f6; }
+
+.box {
+  background:#151821;
+  padding:8px;
+  border-radius:8px;
+  margin-bottom:8px;
+}
+
+.small { font-size:11px; opacity:.8; }
+
+.clock-square {
+  width: 18px;
+  height: 18px;
+  background: #222;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 6px;
+}
+
+.clock-square .fill {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #3b82f6;
+  transition: height 0.02s linear;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(32, 1fr);
+  gap: 3px;
+  margin-top: 6px;
+}
+
+.cell {
+  height: 10px;
+  background: #222;
+  border-radius: 2px;
+}
+
+.cell.active { background: #3b82f6; }
+
+.cell.beat {
+  border: 1px solid #444;
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+  <div class="box">
+    <div class="row">
+      <button @click="initMIDI">Init MIDI</button>
+
+      <select v-model="midi.inId">
+        <option v-for="i in inputs" :value="i.id">{{i.name}}</option>
+      </select>
+
+      <select v-model="midi.outId">
+        <option v-for="o in outputs" :value="o.id">{{o.name}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="row">
+      <button v-for="m in modes"
+              :class="{active: arp.mode===m}"
+              @click="arp.mode=m">
+        {{m}}
+      </button>
+    </div>
+
+    <div class="row" style="margin-top:6px">
+      <button v-for="d in divisions"
+              :class="{active: arp.division===d}"
+              @click="arp.division=d">
+        {{d}}
+      </button>
+    </div>
+  </div>
+
+  <div class="box">
+
+    <div class="row">
+      <input type="range" min="40" max="200" v-model="arp.bpm"/>
+      <div>{{arp.bpm}} BPM</div>
+    </div>
+
+    <div class="row">
+      <select v-model="arp.signature">
+        <option v-for="s in signatures">{{s}}</option>
+      </select>
+    </div>
+
+    <div class="clock-square">
+      <div class="fill" :style="{height: (barProgress*100)+'%'}"></div>
+    </div>
+
+    <div class="grid">
+      <div v-for="i in stepsPerBar"
+           :key="i"
+           :class="{
+             cell: true,
+             active: (i-1) === (arp.stepIndex % stepsPerBar),
+             beat: (i-1) % stepsPerBeat === 0
+           }">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="box">
+    <div class="row">
+      <button :class="{active: hold}" @click="toggleHold">HOLD</button>
+      <button :class="{active: holdMode==='overwrite'}" @click="toggleHoldMode">
+        {{holdMode}}
+      </button>
+    </div>
+
+    <div class="row">
+      <button :class="{active: soundOn}" @click="soundOn=!soundOn">sound</button>
+      <button :class="{active: freeClock}" @click="freeClock=!freeClock">free clock</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="small">IN</div>
+    <div>
+      <span v-for="n in activeNotes">{{noteName(n)}} </span>
+    </div>
+
+    <div class="small">ARP</div>
+    <div>
+      <span v-for="n in heldNotes">{{noteName(n)}} </span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+
+      midi: { inId:null, outId:null, access:null },
+
+      inputs: [],
+      outputs: [],
+
+      activeNotes: [],
+      heldNotes: [],
+
+      hold: false,
+      holdMode: "accumulate",
+      freeClock: false,
+      soundOn: true,
+
+      modes: ["up","down","updown","random","order","chord"],
+
+      divisions: [
+        "1/4","1/8","1/16","1/32","1/64",
+        "1/4t","1/8t","1/16t","1/32t","1/64t",
+        "1/4.","1/8.","1/16.","1/32.","1/64."
+      ],
+
+      signatures: ["4/4","3/4","5/4","7/4"],
+
+      arp: {
+        mode:"up",
+        division:"1/16",
+        signature:"4/4",
+        bpm:120,
+        stepIndex:0,
+        octaves: 1,
+        repeat: 1
+      },
+
+      scheduler: {
+        running:false,
+        barStart:0,
+        startTime:0,
+        lastStepIndex:0
+      }
+    }
+  },
+
+  computed: {
+
+    beatsPerBar() {
+      return parseInt(this.arp.signature.split("/")[0]);
+    },
+
+    stepsPerBeat() {
+      const map = {
+        "1/4": 1,
+        "1/8": 2,
+        "1/16": 4,
+        "1/32": 8,
+        "1/64": 16,
+        "1/4t": 1.5,
+        "1/8t": 3,
+        "1/16t": 6,
+        "1/32t": 12,
+        "1/64t": 24,
+        "1/4.": 1.5,
+        "1/8.": 3,
+        "1/16.": 6,
+        "1/32.": 12,
+        "1/64.": 24
+      };
+      return map[this.arp.division];
+    },
+
+    stepsPerBar() {
+      return this.beatsPerBar * this.stepsPerBeat;
+    },
+
+    barProgress() {
+      const now = performance.now();
+      const duration = this.barDuration;
+      return ((now - this.scheduler.barStart) % duration) / duration;
+    },
+
+    barDuration() {
+      const beat = 60000 / this.arp.bpm;
+      return beat * this.beatsPerBar;
+    }
+
+  },
+
+  mounted() {
+    this.initMIDI();
+  },
+
+  watch: {
+    "arp.division"() {
+      this.resyncClock();
+    }
+  },
+
+  methods: {
+
+    applyOctaves(notes) {
+      const result = [];
+      const oct = Math.max(1, this.arp.octaves || 1);
+
+      for (let i = 0; i < oct; i++) {
+        const shift = i * 12;
+        result.push(...notes.map(n => n + shift));
+      }
+      return result;
+    },
+
+    applyRepeat(notes) {
+      const rep = Math.max(1, this.arp.repeat || 1);
+      let out = [];
+      for (let i = 0; i < rep; i++) out = out.concat(notes);
+      return out;
+    },
+
+    noteName(n) {
+      const names = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+      return names[n % 12] + (Math.floor(n/12)-1);
+    },
+
+    async initMIDI() {
+      const access = await navigator.requestMIDIAccess();
+      this.midi.access = access;
+
+      this.inputs = [...access.inputs.values()].map(i=>({id:i.id,name:i.name}));
+      this.outputs = [...access.outputs.values()].map(o=>({id:o.id,name:o.name}));
+
+      if (this.inputs.length) this.midi.inId = this.inputs[0].id;
+      if (this.outputs.length) this.midi.outId = this.outputs[0].id;
+
+      access.inputs.forEach(input=>{
+        input.onmidimessage = this.onMIDIIn;
+      });
+    },
+
+    getOut() {
+      return this.midi.access?.outputs.get(this.midi.outId);
+    },
+
+    onMIDIIn(e) {
+      const [status, note, vel] = e.data;
+      const cmd = status & 0xf0;
+
+      if (cmd === 176) {
+        const out = this.getOut();
+        if (out) out.send(e.data);
+      }
+
+      if (cmd === 144 && vel > 0) {
+        if (!this.activeNotes.includes(note)) this.activeNotes.push(note);
+
+        if (this.hold) this.syncHoldNotes();
+        else this.heldNotes = [...this.activeNotes];
+      }
+
+      if (cmd === 128 || (cmd === 144 && vel === 0)) {
+        this.activeNotes = this.activeNotes.filter(x => x !== note);
+
+        if (!this.hold) this.heldNotes = [...this.activeNotes];
+      }
+
+      if (cmd === 176 && note === 64) {
+        this.hold = vel > 63;
+        if (!this.hold) this.clearHold();
+      }
+
+      this.updateClockGate();
+    },
+
+    syncHoldNotes() {
+      if (this.holdMode === "overwrite") {
+        this.heldNotes = [...this.activeNotes].sort((a,b)=>a-b);
+      } else {
+        this.heldNotes = [...new Set([...this.heldNotes, ...this.activeNotes])];
+      }
+    },
+
+    clearHold() {
+      this.heldNotes = [];
+    },
+
+    toggleHold() {
+      this.hold = !this.hold;
+      if (!this.hold) this.clearHold();
+    },
+
+    toggleHoldMode() {
+      this.holdMode = this.holdMode === "overwrite"
+        ? "accumulate"
+        : "overwrite";
+    },
+
+    updateClockGate() {
+      const hasNotes = this.activeNotes.length || this.heldNotes.length;
+
+      if (this.freeClock) {
+        if (hasNotes && !this.scheduler.running) {
+          this.resetClock();
+          this.startClock();
+        }
+        if (!hasNotes && this.scheduler.running) {
+          this.stopClock();
+        }
+      } else if (!this.scheduler.running) {
+        this.startClock();
+      }
+    },
+
+    resetClock() {
+      this.arp.stepIndex = 0;
+      this.scheduler.barStart = performance.now();
+      this.scheduler.startTime = performance.now();
+      this.scheduler.lastStepIndex = -1;
+    },
+
+    startClock() {
+      if (this.scheduler.running) return;
+
+      this.scheduler.running = true;
+      this.scheduler.startTime = performance.now();
+      this.scheduler.lastStepIndex = -1;
+
+      const tick = () => {
+        if (!this.scheduler.running) return;
+
+        const now = performance.now();
+        const stepDur = this.stepDuration();
+
+        const index = Math.floor((now - this.scheduler.startTime) / stepDur);
+
+        while (this.scheduler.lastStepIndex < index) {
+          this.scheduler.lastStepIndex++;
+          this.scheduleStep();
+        }
+
+        requestAnimationFrame(tick);
+      };
+
+      requestAnimationFrame(tick);
+    },
+
+    stopClock() {
+      this.scheduler.running = false;
+    },
+
+    resyncClock() {
+      if (!this.scheduler.running) return;
+
+      const now = performance.now();
+      const stepDur = this.stepDuration();
+
+      const index = Math.floor((now - this.scheduler.startTime) / stepDur);
+
+      this.scheduler.startTime = now - index * stepDur;
+      this.scheduler.lastStepIndex = index - 1;
+    },
+
+    scheduleStep() {
+      const notesSource = this.heldNotes.length ? this.heldNotes : this.activeNotes;
+      if (!notesSource.length) return;
+
+      const notes = this.pickNotes([...notesSource]);
+      const out = this.getOut();
+      const n = notes[this.arp.stepIndex % notes.length];
+
+      if (out && this.soundOn) {
+        out.send([144, n, 100]);
+        setTimeout(() => out.send([128, n, 0]), this.stepDuration()*0.8);
+      }
+
+      this.arp.stepIndex++;
+    },
+
+    stepDuration() {
+      const base = 60000 / this.arp.bpm;
+
+      const map = {
+        "1/4":1,
+        "1/8":0.5,
+        "1/16":0.25,
+        "1/32":0.125,
+        "1/64":0.0625,
+        "1/4t": 2/3,
+        "1/8t": 1/3,
+        "1/16t": 1/6,
+        "1/32t": 1/12,
+        "1/64t": 1/24,
+        "1/4.": 1.5,
+        "1/8.": 0.75,
+        "1/16.": 0.375,
+        "1/32.": 0.1875,
+        "1/64.": 0.09375
+      };
+
+      return base * (map[this.arp.division] || 0.25);
+    },
+
+    pickNotes(notes) {
+      if (!notes.length) return [];
+
+      let base;
+
+      switch(this.arp.mode) {
+        case "up": base = [...notes].sort((a,b)=>a-b); break;
+        case "down": base = [...notes].sort((a,b)=>b-a); break;
+        case "random": base = [...notes].sort(()=>Math.random()-0.5); break;
+        case "order": base = notes; break;
+        case "updown": {
+          const up = [...notes].sort((a,b)=>a-b);
+          const down = [...up].reverse().slice(1,-1);
+          base = [...up, ...down];
+          break;
+        }
+        case "chord": base = notes; break;
+        default: base = notes;
+      }
+
+      base = this.applyOctaves(base);
+      base = this.applyRepeat(base);
+
+      return base;
+    }
+
+  }
+}).mount("#app");
+</script>
+
+</body>
+</html>
