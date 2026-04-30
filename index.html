@@ -107,6 +107,7 @@ body {
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
+  margin-bottom: 14px;
 }
 
 .midi-row select {
@@ -281,7 +282,7 @@ body {
 .sig-row {
   display: flex;
   gap: 5px;
-  margin-bottom: 14px;
+  margin-top: 14px;
 }
 
 .sig-btn {
@@ -350,6 +351,7 @@ body {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .spin-group {
@@ -461,6 +463,8 @@ body {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  margin-bottom: 14px;
+  justify-content: space-between;
 }
 
 /* Separator */
@@ -665,18 +669,15 @@ body {
 
   <!-- Header -->
   <div class="header">
-    <h1>ARP</h1>
-    <div class="subtitle">MIDI Arpeggiator</div>
+    <!-- <h1>ARP</h1> -->
+    <div class="subtitle">WEBMIDI Arpeggiator</div>
     <div class="midi-status">
       <div class="midi-dot" :class="{on: midi.access}"></div>
       MIDI
     </div>
   </div>
 
-  <!-- MIDI I/O + Sound + On/Off -->
-  <div class="panel">
-    <div class="panel-label">MIDI</div>
-    <div class="midi-row">
+  <div class="midi-row">
       <button class="btn" @click="initMIDI">Init</button>
       <select v-model="midi.inId">
         <option v-for="i in inputs" :value="i.id">↓ {{i.name}}</option>
@@ -687,14 +688,19 @@ body {
         <option v-if="!outputs.length" :value="null">— no output —</option>
       </select>
     </div>
-    <div class="sep"></div>
+    
     <div class="toggle-row">
       <button class="btn" :class="{on: arpOn}" @click="arpOn=!arpOn">
-        {{ arpOn ? '▶ ON' : '■ OFF' }}
+        {{ arpOn ? 'ARP ON' : 'ARP OFF' }}
       </button>
       <button class="btn" :class="{on: soundOn}" @click="soundOn=!soundOn">♪ SOUND</button>
     </div>
-  </div>
+
+  <!-- MIDI I/O + Sound + On/Off -->
+  <!-- <div class="panel">
+    <div class="panel-label">MIDI</div>
+    
+  </div> -->
 
   <!-- Clock / Tempo + Free + Sync -->
   <div class="panel">
@@ -719,18 +725,6 @@ body {
       </span>
     </div>
 
-    <!-- Signature -->
-    <div class="sig-row">
-      <button v-for="s in signatures"
-              class="sig-btn"
-              :class="{on: arp.signature===s}"
-              @click="arp.signature=s">{{s}}</button>
-    </div>
-
-    <!-- Bar progress -->
-    <!-- <div class="bar-prog">
-      <div class="bar-prog-fill" :style="{width: (barProgress*100)+'%'}"></div>
-    </div> -->
 
     <div class="tempo-row">
       <div>
@@ -739,6 +733,14 @@ body {
       </div>
       <input type="range" class="bpm-slider" min="40" max="240" v-model.number="arp.bpm"/>
     </div>
+
+
+
+    <!-- Bar progress -->
+    <!-- <div class="bar-prog">
+      <div class="bar-prog-fill" :style="{width: (barProgress*100)+'%'}"></div>
+    </div> -->
+
 
     <!-- Sequencer grid -->
     <div class="seq-grid">
@@ -750,6 +752,14 @@ body {
              'beat-start': (i-1) % stepsPerBeatDisplay === 0
            }">
       </div>
+    </div>
+
+    <!-- Signature -->
+    <div class="sig-row">
+      <button v-for="s in signatures"
+              class="sig-btn"
+              :class="{on: arp.signature===s}"
+              @click="arp.signature=s">{{s}}</button>
     </div>
 
     <div class="quant-info" v-if="quantizedLength !== null">
