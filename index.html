@@ -39,7 +39,6 @@ body {
   max-width: 460px;
 }
 
-/* Header */
 .header {
   display: flex;
   align-items: baseline;
@@ -83,7 +82,6 @@ body {
 
 .midi-dot.on { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 
-/* Panels */
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -101,7 +99,6 @@ body {
   margin-bottom: 10px;
 }
 
-/* MIDI row */
 .midi-row {
   display: flex;
   gap: 6px;
@@ -126,7 +123,6 @@ body {
 
 .midi-row select:focus { border-color: var(--accent); }
 
-/* Chip button */
 .btn {
   background: var(--bg);
   color: var(--text-dim);
@@ -158,7 +154,6 @@ body {
   font-weight: 700;
 }
 
-/* Mode grid */
 .mode-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -190,50 +185,6 @@ body {
   font-weight: 700;
 }
 
-/* Division grid */
-.div-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-}
-
-.div-btn {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 6px 2px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-family: var(--mono);
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.1s;
-  user-select: none;
-}
-
-.div-btn:hover { border-color: var(--muted); }
-.div-btn.on { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
-.div-btn.triplet { color: var(--accent2); }
-.div-btn.triplet.on { background: var(--accent2); color: #000; border-color: var(--accent2); }
-.div-btn.dotted { color: #88aaff; }
-.div-btn.dotted.on { background: #88aaff; color: #000; border-color: #88aaff; }
-
-.div-labels {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  margin-bottom: 4px;
-}
-
-.div-label {
-  font-size: 8px;
-  font-family: var(--mono);
-  text-align: center;
-  color: var(--text-dim);
-  letter-spacing: 0.06em;
-}
-
-/* Tempo */
 .tempo-row {
   display: flex;
   align-items: center;
@@ -278,7 +229,6 @@ body {
   box-shadow: 0 0 8px var(--accent);
 }
 
-/* Signature */
 .sig-row {
   display: flex;
   gap: 5px;
@@ -300,11 +250,6 @@ body {
 
 .sig-btn.on { background: var(--beat); color: var(--text); border-color: var(--muted); }
 
-/* Sequencer grid */
-.seq-wrap {
-  position: relative;
-}
-
 .seq-grid {
   display: flex;
   gap: 2px;
@@ -318,12 +263,9 @@ body {
   background: var(--bg);
   border: 1px solid var(--border);
   transition: background 0.05s;
-  position: relative;
 }
 
-.seq-cell.beat-start {
-  border-color: var(--muted);
-}
+.seq-cell.beat-start { border-color: var(--muted); }
 
 .seq-cell.active {
   background: var(--accent);
@@ -331,22 +273,6 @@ body {
   box-shadow: 0 0 4px var(--accent);
 }
 
-/* Bar progress bar */
-.bar-prog {
-  height: 2px;
-  background: var(--border);
-  border-radius: 1px;
-  margin-bottom: 6px;
-  overflow: hidden;
-}
-
-.bar-prog-fill {
-  height: 100%;
-  background: var(--accent);
-  transition: width 0.04s linear;
-}
-
-/* Spinbox-style controls */
 .spin-row {
   display: flex;
   gap: 8px;
@@ -357,7 +283,6 @@ body {
 .spin-group {
   display: flex;
   align-items: center;
-  gap: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
@@ -408,7 +333,6 @@ body {
   padding: 0 2px;
 }
 
-/* Notes display */
 .notes-area {
   min-height: 30px;
   display: flex;
@@ -439,7 +363,6 @@ body {
   to { transform: scale(1); opacity: 1; }
 }
 
-/* Quantize info */
 .quant-info {
   font-size: 10px;
   color: var(--text-dim);
@@ -447,18 +370,8 @@ body {
   margin-top: 6px;
 }
 
-.quant-info span {
-  color: var(--accent2);
-}
+.quant-info span { color: var(--accent2); }
 
-/* Two cols */
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-/* Toggle row */
 .toggle-row {
   display: flex;
   gap: 6px;
@@ -467,38 +380,21 @@ body {
   justify-content: space-between;
 }
 
-/* Separator */
 .sep {
   height: 1px;
   background: var(--border);
   margin: 10px 0;
 }
 
-/* Free clock warning */
-.free-tag {
-  font-size: 9px;
-  color: var(--accent2);
-  font-family: var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.free-tag.show { opacity: 1; }
-
-/* Chord badge */
 .chord-badge {
   font-size: 9px;
-  letter-spacing: 0.06em;
   color: var(--text-dim);
   font-family: var(--mono);
   margin-left: 4px;
 }
 
 /* Division slider */
-.div-slider-wrap {
-  margin-top: 4px;
-}
+.div-slider-wrap { margin-top: 4px; }
 
 .div-ticks {
   display: flex;
@@ -577,9 +473,7 @@ body {
   transition: border-color 0.15s;
 }
 
-.hold-block.active {
-  border-color: var(--accent);
-}
+.hold-block.active { border-color: var(--accent); }
 
 .hold-main-btn {
   background: var(--bg);
@@ -610,9 +504,7 @@ body {
   transition: opacity 0.15s;
 }
 
-.hold-mode-btns.enabled {
-  opacity: 1;
-}
+.hold-mode-btns.enabled { opacity: 1; }
 
 .hold-mode-btn {
   flex: 1;
@@ -638,11 +530,11 @@ body {
 
 .hold-mode-btn:hover { color: var(--text); }
 
-
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+
 .running-dot {
   display: inline-block;
   width: 6px; height: 6px;
@@ -653,6 +545,7 @@ body {
   margin-right: 5px;
   vertical-align: middle;
 }
+
 .stopped-dot {
   display: inline-block;
   width: 6px; height: 6px;
@@ -667,9 +560,7 @@ body {
 
 <div id="app">
 
-  <!-- Header -->
   <div class="header">
-    <!-- <h1>ARP</h1> -->
     <div class="subtitle">WEBMIDI Arpeggiator</div>
     <div class="midi-status">
       <div class="midi-dot" :class="{on: midi.access}"></div>
@@ -678,31 +569,25 @@ body {
   </div>
 
   <div class="midi-row">
-      <button class="btn" @click="initMIDI">Init</button>
-      <select v-model="midi.inId">
-        <option v-for="i in inputs" :value="i.id">↓ {{i.name}}</option>
-        <option v-if="!inputs.length" :value="null">— no input —</option>
-      </select>
-      <select v-model="midi.outId">
-        <option v-for="o in outputs" :value="o.id">↑ {{o.name}}</option>
-        <option v-if="!outputs.length" :value="null">— no output —</option>
-      </select>
-    </div>
-    
-    <div class="toggle-row">
-      <button class="btn" :class="{on: arpOn}" @click="arpOn=!arpOn">
-        {{ arpOn ? 'ARP ON' : 'ARP OFF' }}
-      </button>
-      <button class="btn" :class="{on: soundOn}" @click="soundOn=!soundOn">♪ SOUND</button>
-    </div>
+    <button class="btn" @click="initMIDI">Init</button>
+    <select v-model="midi.inId">
+      <option v-for="i in inputs" :value="i.id">↓ {{i.name}}</option>
+      <option v-if="!inputs.length" :value="null">— no input —</option>
+    </select>
+    <select v-model="midi.outId">
+      <option v-for="o in outputs" :value="o.id">↑ {{o.name}}</option>
+      <option v-if="!outputs.length" :value="null">— no output —</option>
+    </select>
+  </div>
 
-  <!-- MIDI I/O + Sound + On/Off -->
-  <!-- <div class="panel">
-    <div class="panel-label">MIDI</div>
-    
-  </div> -->
+  <div class="toggle-row">
+    <button class="btn" :class="{on: arpOn}" @click="arpOn=!arpOn">
+      {{ arpOn ? 'ARP ON' : 'ARP OFF' }}
+    </button>
+    <button class="btn" :class="{on: soundOn}" @click="soundOn=!soundOn">♪ SOUND</button>
+  </div>
 
-  <!-- Clock / Tempo + Free + Sync -->
+  <!-- Clock / Tempo -->
   <div class="panel">
     <div class="panel-label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <span>
@@ -725,7 +610,6 @@ body {
       </span>
     </div>
 
-
     <div class="tempo-row">
       <div>
         <div class="bpm-display">{{arp.bpm}}</div>
@@ -734,18 +618,8 @@ body {
       <input type="range" class="bpm-slider" min="40" max="240" v-model.number="arp.bpm"/>
     </div>
 
-
-
-    <!-- Bar progress -->
-    <!-- <div class="bar-prog">
-      <div class="bar-prog-fill" :style="{width: (barProgress*100)+'%'}"></div>
-    </div> -->
-
-
-    <!-- Sequencer grid -->
     <div class="seq-grid">
-      <div v-for="i in displaySteps"
-           :key="i"
+      <div v-for="i in displaySteps" :key="i"
            :class="{
              'seq-cell': true,
              'active': (i-1) === (arp.stepIndex % displaySteps),
@@ -754,10 +628,8 @@ body {
       </div>
     </div>
 
-    <!-- Signature -->
     <div class="sig-row">
-      <button v-for="s in signatures"
-              class="sig-btn"
+      <button v-for="s in signatures" class="sig-btn"
               :class="{on: arp.signature===s}"
               @click="arp.signature=s">{{s}}</button>
     </div>
@@ -792,12 +664,11 @@ body {
     </div>
   </div>
 
-  <!-- Arpeggiator : Mode + Hold + Oct + Repeat -->
+  <!-- Arpeggiator -->
   <div class="panel">
     <div class="panel-label">Arpeggiator</div>
     <div class="mode-grid">
-      <button v-for="m in modes"
-              class="mode-btn"
+      <button v-for="m in modes" class="mode-btn"
               :class="{on: arp.mode===m}"
               @click="arp.mode=m">
         {{m}}<span v-if="m==='chord'" class="chord-badge">∥</span>
@@ -821,7 +692,6 @@ body {
       </div>
     </div>
 
-    <!-- Hold — grand bloc avec mode lié visuellement -->
     <div class="hold-block" :class="{active: hold}">
       <button class="hold-main-btn" :class="{active: hold}" @click="toggleHold">
         HOLD
@@ -845,14 +715,14 @@ body {
   <div class="panel">
     <div class="panel-label" style="margin-bottom:6px">IN</div>
     <div class="notes-area">
-      <div class="note-chip" v-for="n in activeNotes" :key="n">{{noteName(n)}}</div>
-      <div v-if="!activeNotes.length" style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">—</div>
+      <div class="note-chip" v-for="n in (hold && heldNotes.length ? heldNotes : activeNotes)" :key="n">{{noteName(n)}}</div>
+      <div v-if="!activeNotes.length && !heldNotes.length" style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">—</div>
     </div>
     <div class="sep"></div>
     <div class="panel-label" style="margin-bottom:6px">ARP</div>
     <div class="notes-area">
-      <div class="note-chip arp" v-for="n in heldNotes" :key="n">{{noteName(n)}}</div>
-      <div v-if="!heldNotes.length" style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">—</div>
+      <div class="note-chip arp" v-for="(n, i) in arpPattern" :key="i">{{noteName(n)}}</div>
+      <div v-if="!arpPattern.length" style="font-size:11px;color:var(--text-dim);font-family:var(--mono)">—</div>
     </div>
   </div>
 
@@ -871,18 +741,14 @@ createApp({
       activeNotes: [],
       heldNotes: [],
 
-      // Chord buffer : on attend CHORD_WAIT ms après la dernière note-on
-      // avant de valider l'accord et de repartir du step 0
       _chordTimer: null,
       CHORD_WAIT: 20,
-      _peakCount: 0,
-      _peakNotes: [],
 
       hold: false,
       arpOn: true,
       midiSync: false,
       midiBpm: null,
-      midiPpqn: 4,           // 4 par défaut pour Minifreak, 24 pour standard
+      midiPpqn: 4,
       _midiClockTimes: [],
       holdMode: "overwrite",
       freeClock: false,
@@ -890,12 +756,10 @@ createApp({
 
       modes: ["up","down","updown","random","order","chord"],
 
-      // Divisions : du plus lent au plus vite, sans les 64e et 32.
       divisions: [
-        "1/4.",
-        "1/4", "1/8.", "1/4t",
-        "1/8", "1/16.", "1/8t",
-        "1/16", "1/32.", "1/16t",
+        "1/4.","1/4","1/8.","1/4t",
+        "1/8","1/16.","1/8t",
+        "1/16","1/32.","1/16t",
         "1/32"
       ],
 
@@ -912,12 +776,10 @@ createApp({
       },
 
       _wakeLock: null,
-
-      // snapshot validé après le buffer — c'est ce que l'arp joue vraiment
       chordSnapshot: [],
-      // true pendant le buffer : le clock tourne mais joue le snapshot précédent
       waitingForChord: false,
       _rafId: null,
+      barProgressValue: 0,
 
       scheduler: {
         running:false,
@@ -931,24 +793,20 @@ createApp({
   computed: {
     beatsPerBar() {
       const sig = this.arp.signature;
-      if (sig === "6/8") return 2; // 6/8 → 2 temps composés
+      if (sig === "6/8") return 2;
       return parseInt(sig.split("/")[0]);
     },
 
-    // Durée d'un beat en ms
     beatDuration() {
       const sig = this.arp.signature;
       const base = 60000 / this.arp.bpm;
-      if (sig === "6/8") return base * 1.5; // noire pointée
+      if (sig === "6/8") return base * 1.5;
       return base;
     },
 
-    // Combien de steps par beat (toujours entier)
     stepsPerBeatDisplay() {
-      const div = this.arp.division;
       const straight = { "1/4":1,"1/8":2,"1/16":4,"1/32":8,"1/64":16 };
-      // Pour les triplets et pointés on retourne la valeur straight la plus proche
-      const base = div.replace("t","").replace(".","");
+      const base = this.arp.division.replace("t","").replace(".","");
       return straight[base] || 4;
     },
 
@@ -970,33 +828,32 @@ createApp({
       return this.barProgressValue;
     },
 
-    // Quantize: si on a N notes, on les aligne sur un multiple de beatsPerBar
     quantizedLength() {
-      const n = this.heldNotes.length || this.activeNotes.length;
-      if (!n) return null;
+      const src = this.heldNotes.length ? this.heldNotes : this.activeNotes;
+      if (!src.length) return null;
+      const base = this.pickNotes([...src]);
+      if (!base.length) return null;
       const beats = this.beatsPerBar;
-      // On calcule la taille réelle du pattern avec octaves/repeat
-      const base = this.pickNotes([...(this.heldNotes.length ? this.heldNotes : this.activeNotes)]);
-      const len = base.length;
-      if (len === 0) return null;
-      // multiple de beats le plus proche ≥ len
-      const mult = Math.ceil(len / beats) * beats;
-      return mult;
+      return Math.ceil(base.length / beats) * beats;
     },
 
-    // Durée d'un beat en secondes pour synchroniser le clignotement
+    arpPattern() {
+      const src = this.chordSnapshot.length ? this.chordSnapshot
+                : this.heldNotes.length ? this.heldNotes
+                : this.activeNotes;
+      if (!src.length) return [];
+      return this.pickNotes([...src]);
+    },
+
     pulseDuration() {
-      const beatSeconds = 60 / this.arp.bpm;
-      return beatSeconds + 's';
+      return (60 / this.arp.bpm) + 's';
     }
   },
 
   mounted() {
     this.initMIDI();
     this.startRAF();
-    if (!this.freeClock) {
-      this.startClock();
-    }
+    if (!this.freeClock) this.startClock();
     this.acquireWakeLock();
   },
 
@@ -1007,17 +864,15 @@ createApp({
 
   watch: {
     "arp.division"() { this.resyncClock(); },
-    "arp.bpm"() { this.resyncClock(); }
+    "arp.bpm"()      { this.resyncClock(); }
   },
 
   methods: {
 
-    // RAF pour barProgress réactif
     async acquireWakeLock() {
       if (!('wakeLock' in navigator)) return;
       try {
         this._wakeLock = await navigator.wakeLock.request('screen');
-        // Re-acquiert si la page redevient visible (ex: retour d'onglet)
         document.addEventListener('visibilitychange', async () => {
           if (document.visibilityState === 'visible') {
             try { this._wakeLock = await navigator.wakeLock.request('screen'); } catch {}
@@ -1030,8 +885,7 @@ createApp({
       const tick = () => {
         if (this.scheduler.running) {
           const now = performance.now();
-          const dur = this.barDuration;
-          this.barProgressValue = ((now - this.scheduler.barStart) % dur) / dur;
+          this.barProgressValue = ((now - this.scheduler.barStart) % this.barDuration) / this.barDuration;
         }
         this._rafId = requestAnimationFrame(tick);
       };
@@ -1060,8 +914,7 @@ createApp({
 
     onDivTouchStart(e) {
       const track = e.currentTarget;
-      const touch = e.touches[0];
-      this.arp.division = this.divisions[this.divIndexFromEvent(touch.clientX, track)];
+      this.arp.division = this.divisions[this.divIndexFromEvent(e.touches[0].clientX, track)];
       const onMove = (te) => {
         this.arp.division = this.divisions[this.divIndexFromEvent(te.touches[0].clientX, track)];
       };
@@ -1071,13 +924,6 @@ createApp({
       };
       window.addEventListener('touchmove', onMove, { passive: true });
       window.addEventListener('touchend', onEnd);
-    },
-
-    onDivTrackClick(e) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const idx = Math.round(ratio * (this.divisions.length - 1));
-      this.arp.division = this.divisions[idx];
     },
 
     clamp(key, delta, min, max) {
@@ -1120,25 +966,15 @@ createApp({
       const vel    = data[2];
       const cmd    = status & 0xf0;
 
-      // === MIDI Clock (messages système 1 octet) ===
-      if (status === 0xF8) {
-        if (this.midiSync) this.onMidiClockTick();
-        return;
-      }
+      // MIDI Clock
+      if (status === 0xF8) { if (this.midiSync) this.onMidiClockTick(); return; }
       if (status === 0xFA || status === 0xFB) {
-        if (this.midiSync) {
-          this._midiClockTimes = [];
-          this.resetClock();
-          if (!this.scheduler.running) this.startClock();
-        }
+        if (this.midiSync) { this._midiClockTimes = []; this.resetClock(); if (!this.scheduler.running) this.startClock(); }
         return;
       }
-      if (status === 0xFC) {
-        if (this.midiSync) this.stopClock();
-        return;
-      }
+      if (status === 0xFC) { if (this.midiSync) this.stopClock(); return; }
 
-      // Pour les messages note/CC : seulement depuis l'input sélectionné
+      // Notes/CC : input sélectionné seulement
       if (e.target.id !== this.midi.inId) return;
 
       // Passe-through CC
@@ -1149,18 +985,13 @@ createApp({
 
       // Note On
       if (cmd === 144 && vel > 0) {
-        if (this.hold && this.holdMode === "overwrite" && this.activeNotes.length === 0) {
-          this.heldNotes = [];
-        }
         if (!this.activeNotes.includes(note)) this.activeNotes.push(note);
-        if (this.hold) {
-          this.syncHoldNotes();
-          // On mémorise le pic : le plus grand accord enfoncé simultanément
-          if (this.activeNotes.length >= this._peakCount) {
-            this._peakCount = this.activeNotes.length;
-            this._peakNotes = [...this.activeNotes];
-          }
+
+        if (this.hold && this.holdMode === 'accumulate') {
+          // accumulate : on ajoute au held existant
+          this.heldNotes = [...new Set([...this.heldNotes, ...this.activeNotes])];
         } else {
+          // sans hold ou hold+overwrite : heldNotes suit activeNotes exactement
           this.heldNotes = [...this.activeNotes];
         }
         this.armChordBuffer();
@@ -1170,7 +1001,22 @@ createApp({
       if (cmd === 128 || (cmd === 144 && vel === 0)) {
         this.activeNotes = this.activeNotes.filter(x => x !== note);
 
-        if (!this.hold) {
+        if (this.hold && this.holdMode === 'accumulate') {
+          // accumulate : on ne touche à rien sur note-off, les notes restent
+        } else if (this.hold && this.holdMode === 'overwrite') {
+          // On ne met à jour le snapshot que si activeNotes n'est pas vide
+          // ET qu'on est encore en train de construire l'accord (pas de relâcher)
+          // → on laisse le buffer gérer la capture, le note-off ne touche à rien
+          // sauf pour annuler le buffer si on relâche tout
+          if (this.activeNotes.length === 0) {
+            // tout relâché : buffer annulé, snapshot gardé
+            if (this._chordTimer) { clearTimeout(this._chordTimer); this._chordTimer = null; }
+            this.waitingForChord = false;
+          }
+          // notes restantes pendant le relâcher → on ne touche à rien,
+          // le snapshot en cours reste valide
+        } else {
+          // sans hold : suit activeNotes, vide si rien
           this.heldNotes = [...this.activeNotes];
           if (this.activeNotes.length === 0) {
             this.chordSnapshot = [];
@@ -1179,20 +1025,10 @@ createApp({
           } else {
             this.chordSnapshot = [...this.activeNotes];
           }
-        } else {
-          if (this.activeNotes.length === 0 && this._peakNotes.length > 0) {
-            if (this.holdMode === 'overwrite') {
-              // overwrite : on valide le pic comme snapshot au relâcher
-              this.heldNotes = [...this._peakNotes];
-              this.chordSnapshot = [...this._peakNotes];
-            }
-            this._peakCount = 0;
-            this._peakNotes = [];
-          }
         }
       }
 
-      // CC64 = sustain pédal → hold
+      // CC64 sustain → hold
       if (cmd === 176 && note === 64) {
         this.hold = vel > 63;
         if (!this.hold) this.clearHold();
@@ -1201,20 +1037,9 @@ createApp({
       this.updateClockGate();
     },
 
-    syncHoldNotes() {
-      if (this.holdMode === "overwrite") {
-        // Repart de zéro avec uniquement les notes physiquement enfoncées
-        this.heldNotes = [...this.activeNotes].sort((a,b)=>a-b);
-      } else {
-        this.heldNotes = [...new Set([...this.heldNotes, ...this.activeNotes])];
-      }
-    },
-
     clearHold() {
       this.heldNotes = [];
       this.chordSnapshot = [];
-      this._peakCount = 0;
-      this._peakNotes = [];
       if (this._chordTimer) { clearTimeout(this._chordTimer); this._chordTimer = null; }
       this.waitingForChord = false;
     },
@@ -1224,18 +1049,13 @@ createApp({
       if (!this.hold) this.clearHold();
     },
 
-    toggleHoldMode() {
-      this.holdMode = this.holdMode === "overwrite" ? "accumulate" : "overwrite";
-    },
-
     armChordBuffer() {
       if (this._chordTimer) clearTimeout(this._chordTimer);
       this.waitingForChord = true;
 
+      // free clock : démarre immédiatement sur premier accord
       if (this.freeClock && this.chordSnapshot.length === 0) {
-        const src = (this.hold && this.holdMode === 'overwrite') ? this.activeNotes
-                  : this.hold ? this.heldNotes
-                  : this.activeNotes;
+        const src = (this.hold && this.holdMode === 'accumulate') ? this.heldNotes : this.activeNotes;
         if (src.length) {
           this.chordSnapshot = [...src];
           this.arp.stepIndex = 0;
@@ -1244,14 +1064,12 @@ createApp({
       }
 
       this._chordTimer = setTimeout(() => {
-        // hold+overwrite : on prend activeNotes (les doigts réellement enfoncés
-        // au moment où le buffer expire) — pas heldNotes qui peut contenir
-        // des notes de l'accord précédent pas encore effacées
-        const src = (this.hold && this.holdMode === 'overwrite') ? this.activeNotes
-                  : this.hold ? this.heldNotes
-                  : this.activeNotes;
+        // accumulate : snapshot = heldNotes complet
+        // overwrite + sans hold : snapshot = activeNotes à cet instant
+        const snapshot = (this.hold && this.holdMode === 'accumulate')
+          ? [...this.heldNotes]
+          : [...this.activeNotes];
 
-        const snapshot = [...src];
         if (!snapshot.length) {
           this.waitingForChord = false;
           this._chordTimer = null;
@@ -1259,14 +1077,7 @@ createApp({
         }
 
         const wasEmpty = this.chordSnapshot.length === 0;
-        // En accumulate+hold on prend toujours heldNotes complet comme snapshot
-        // (il grandit à chaque note-on via syncHoldNotes)
-        // En overwrite ou sans hold, on prend le snapshot calculé ci-dessus
-        if (this.hold && this.holdMode === 'accumulate') {
-          this.chordSnapshot = [...this.heldNotes];
-        } else {
-          this.chordSnapshot = snapshot;
-        }
+        this.chordSnapshot = snapshot;
         if (wasEmpty) this.arp.stepIndex = 0;
 
         this.waitingForChord = false;
@@ -1277,35 +1088,24 @@ createApp({
     toggleMidiSync() {
       this.midiSync = !this.midiSync;
       if (!this.midiSync) {
-        // Retour en mode interne : repart sur le BPM du slider
         this._midiClockTimes = [];
         this.midiBpm = null;
         if (!this.scheduler.running && !this.freeClock) this.startClock();
       } else {
-        // En attente du clock externe — on stoppe le clock interne
         this.stopClock();
         this._midiClockTimes = [];
       }
     },
 
     onMidiClockTick() {
-      // MIDI clock = 24 ticks par noire (quarter note)
       const now = performance.now();
       this._midiClockTimes.push(now);
+      if (this._midiClockTimes.length > this.midiPpqn) this._midiClockTimes.shift();
 
-      // On garde une fenêtre glissante de midiPpqn ticks (= 1 noire)
-      if (this._midiClockTimes.length > this.midiPpqn) {
-        this._midiClockTimes.shift();
-      }
-
-      // Calcul BPM dès qu'on a assez de ticks
       if (this._midiClockTimes.length >= Math.min(4, this.midiPpqn)) {
         const len = this._midiClockTimes.length;
-        const elapsed = this._midiClockTimes[len - 1] - this._midiClockTimes[0];
-        const tickInterval = elapsed / (len - 1);
-        const beatInterval = tickInterval * this.midiPpqn;
-        const bpm = Math.round(60000 / beatInterval);
-
+        const elapsed = this._midiClockTimes[len-1] - this._midiClockTimes[0];
+        const bpm = Math.round(60000 / (elapsed / (len-1) * this.midiPpqn));
         if (bpm !== this.arp.bpm) {
           this.arp.bpm = bpm;
           this.midiBpm = bpm;
@@ -1313,77 +1113,57 @@ createApp({
         }
       }
 
-      // Démarre le clock interne si pas encore lancé
-      if (!this.scheduler.running) {
-        this.resetClock();
-        this.startClock();
-      }
+      if (!this.scheduler.running) { this.resetClock(); this.startClock(); }
     },
 
     toggleFreeClock() {
       this.freeClock = !this.freeClock;
       if (this.freeClock) {
-        // Passage en free : on stoppe si aucune note active
         const hasNotes = this.activeNotes.length > 0 || this.heldNotes.length > 0;
         if (!hasNotes) this.stopClock();
       } else {
-        // Passage en non-free : le clock repart toujours
         if (!this.scheduler.running) this.startClock();
       }
     },
 
     updateClockGate() {
       const hasNotes = this.activeNotes.length > 0 || this.heldNotes.length > 0;
-
       if (this.freeClock) {
-        if (hasNotes && !this.scheduler.running) {
-          this.resetClock();
-          this.startClock();
-        }
-        if (!hasNotes && this.scheduler.running) {
-          this.stopClock();
-        }
+        if (hasNotes && !this.scheduler.running) { this.resetClock(); this.startClock(); }
+        if (!hasNotes && this.scheduler.running) this.stopClock();
       }
-      // non-free : le clock tourne toujours, rien à faire ici
     },
 
     resetClock() {
       this.arp.stepIndex = 0;
-      this.scheduler.barStart   = performance.now();
-      this.scheduler.startTime  = performance.now();
+      this.scheduler.barStart      = performance.now();
+      this.scheduler.startTime     = performance.now();
       this.scheduler.lastStepIndex = -1;
     },
 
     startClock() {
       if (this.scheduler.running) return;
-      this.scheduler.running = true;
-      this.scheduler.startTime = performance.now();
-      this.scheduler.barStart  = performance.now();
+      this.scheduler.running       = true;
+      this.scheduler.startTime     = performance.now();
+      this.scheduler.barStart      = performance.now();
       this.scheduler.lastStepIndex = -1;
 
       const tick = () => {
         if (!this.scheduler.running) return;
-
-        const now = performance.now();
+        const now     = performance.now();
         const stepDur = this.stepDuration();
-        const index = Math.floor((now - this.scheduler.startTime) / stepDur);
+        const index   = Math.floor((now - this.scheduler.startTime) / stepDur);
 
-        // Mise à jour barStart
-        const barDur = this.barDuration;
-        while (now - this.scheduler.barStart >= barDur) {
-          this.scheduler.barStart += barDur;
-        }
+        while (now - this.scheduler.barStart >= this.barDuration)
+          this.scheduler.barStart += this.barDuration;
 
         while (this.scheduler.lastStepIndex < index) {
           this.scheduler.lastStepIndex++;
-          // Calcule le timestamp exact du step sur l'horloge performance
           const stepTime = this.scheduler.startTime + this.scheduler.lastStepIndex * stepDur;
           this.scheduleStep(stepTime);
         }
-
         requestAnimationFrame(tick);
       };
-
       requestAnimationFrame(tick);
     },
 
@@ -1394,21 +1174,20 @@ createApp({
 
     resyncClock() {
       if (!this.scheduler.running) return;
-      const now = performance.now();
+      const now     = performance.now();
       const stepDur = this.stepDuration();
-      const index = Math.floor((now - this.scheduler.startTime) / stepDur);
-      this.scheduler.startTime = now - index * stepDur;
+      const index   = Math.floor((now - this.scheduler.startTime) / stepDur);
+      this.scheduler.startTime     = now - index * stepDur;
       this.scheduler.lastStepIndex = index - 1;
     },
 
     scheduleStep(stepTime) {
       if (!this.arpOn) return;
-      // Pendant le buffer : on joue le snapshot précédent s'il existe,
-      // sinon on attend silencieusement que l'accord soit validé
+
       let src;
       if (this.waitingForChord) {
         if (this.chordSnapshot.length) src = this.chordSnapshot;
-        else return; // première frappe, pas encore de snapshot → silence bref
+        else return;
       } else {
         src = this.chordSnapshot.length ? this.chordSnapshot
             : (this.heldNotes.length ? this.heldNotes : this.activeNotes);
@@ -1418,51 +1197,37 @@ createApp({
       const notes = this.pickNotes([...src]);
       if (!notes.length) return;
 
-      // === QUANTIZATION SUR TIME SIGNATURE ===
-      // On aligne la longueur du pattern sur un multiple de stepsPerBar,
-      // puis on remplit les slots "extra" en rebouclant sur le pattern (pas de silence).
-      const beats = this.beatsPerBar;
-      const stpB  = this.stepsPerBeatDisplay;
-      const stepsPerBarCount = beats * stpB;
-      const rawLen = notes.length;
-      // taille du cycle quantisé (multiple de stepsPerBar ≥ rawLen)
-      const quantLen = Math.ceil(rawLen / stepsPerBarCount) * stepsPerBarCount;
-      // index dans le cycle quantisé
-      const idx = this.arp.stepIndex % quantLen;
-      // on boucle toujours sur le pattern → jamais de silence
-      const n = notes[idx % rawLen];
+      const beats          = this.beatsPerBar;
+      const stepsPerBarCount = beats * this.stepsPerBeatDisplay;
+      const rawLen         = notes.length;
+      const quantLen       = Math.ceil(rawLen / stepsPerBarCount) * stepsPerBarCount;
+      const idx            = this.arp.stepIndex % quantLen;
+      const n              = notes[idx % rawLen];
 
-      const out = this.getOut();
-      const dur = this.stepDuration();
-      const audioDelayMs = Math.max(0, stepTime - performance.now());
+      const out         = this.getOut();
+      const dur         = this.stepDuration();
+      const audioDelay  = Math.max(0, stepTime - performance.now());
 
-      // chord : joue toutes les notes simultanément à chaque step
       if (this.arp.mode === "chord") {
-        if (out) {
-          for (const cn of src) {
-            out.send([144, cn, 100]);
-            setTimeout(() => out.send([128, cn, 0]), dur * 0.8);
-          }
+        if (out) for (const cn of src) {
+          out.send([144, cn, 100]);
+          setTimeout(() => out.send([128, cn, 0]), dur * 0.8);
         }
-        if (this.soundOn) {
-          for (const cn of src) this.playTone(cn, dur * 0.8, audioDelayMs);
-        }
+        if (this.soundOn) for (const cn of src) this.playTone(cn, dur * 0.8, audioDelay);
       } else {
         if (out) {
           out.send([144, n, 100]);
           setTimeout(() => out.send([128, n, 0]), dur * 0.8);
         }
-        if (this.soundOn) this.playTone(n, dur * 0.8, audioDelayMs);
+        if (this.soundOn) this.playTone(n, dur * 0.8, audioDelay);
       }
 
       this.arp.stepIndex++;
     },
 
-    // Web Audio — init lazy au premier clic (autoplay policy)
     getAudioCtx() {
       if (!this._audioCtx) {
         this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        // Compresseur léger pour éviter la saturation sur les accords
         this._compressor = this._audioCtx.createDynamicsCompressor();
         this._compressor.connect(this._audioCtx.destination);
       }
@@ -1471,68 +1236,51 @@ createApp({
     },
 
     playTone(midiNote, durationMs, delayMs = 0) {
-      const ctx = this.getAudioCtx();
-      const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
-      // On schedule dans le futur AudioContext — le thread JS n'attend rien
+      const ctx   = this.getAudioCtx();
+      const freq  = 440 * Math.pow(2, (midiNote - 69) / 12);
       const start = ctx.currentTime + delayMs / 1000;
       const dur   = durationMs / 1000;
-
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
-
+      const osc   = ctx.createOscillator();
+      const gain  = ctx.createGain();
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(freq, start);
-
       gain.gain.setValueAtTime(0, start);
       gain.gain.linearRampToValueAtTime(0.18, start + 0.008);
       gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
-
       osc.connect(gain);
       gain.connect(this._compressor);
-
-      // start/stop sont des appels non-bloquants — le moteur audio les exécute
-      // dans son propre thread au bon moment
       osc.start(start);
       osc.stop(start + dur + 0.01);
     },
 
     stepDuration() {
-      const beat = this.beatDuration;
       const map = {
-        "1/4":1,    "1/8":0.5,    "1/16":0.25,    "1/32":0.125,    "1/64":0.0625,
-        "1/4t":2/3, "1/8t":1/3,   "1/16t":1/6,    "1/32t":1/12,    "1/64t":1/24,
-        "1/4.":1.5, "1/8.":0.75,  "1/16.":0.375,  "1/32.":0.1875,  "1/64.":0.09375
+        "1/4":1, "1/8":0.5, "1/16":0.25, "1/32":0.125,
+        "1/4t":2/3, "1/8t":1/3, "1/16t":1/6, "1/32t":1/12,
+        "1/4.":1.5, "1/8.":0.75, "1/16.":0.375, "1/32.":0.1875
       };
-      return beat * (map[this.arp.division] || 0.25);
+      return this.beatDuration * (map[this.arp.division] || 0.25);
     },
 
     applyOctaves(notes) {
       const oct = Math.max(1, this.arp.octaves || 1);
       const result = [];
-      for (let i = 0; i < oct; i++) {
-        const shift = i * 12;
-        result.push(...notes.map(n => Math.min(127, n + shift)));
-      }
+      for (let i = 0; i < oct; i++)
+        result.push(...notes.map(n => Math.min(127, n + i * 12)));
       return result;
     },
 
     applyRepeat(notes) {
       const rep = Math.max(1, this.arp.repeat || 1);
-      // Intercale chaque note rep fois : C E G → C C E E G G (repeat 2)
       const out = [];
-      for (const n of notes) {
+      for (const n of notes)
         for (let i = 0; i < rep; i++) out.push(n);
-      }
       return out;
     },
 
     pickNotes(notes) {
       if (!notes.length) return [];
-
-      if (this.arp.mode === "chord") {
-        // chord est géré dans scheduleStep directement
-        return notes;
-      }
+      if (this.arp.mode === "chord") return notes;
 
       let base;
       switch(this.arp.mode) {
@@ -1542,18 +1290,16 @@ createApp({
         case "order":  base = notes; break;
         case "updown": {
           const up   = [...notes].sort((a,b)=>a-b);
-          const down = [...up].reverse().slice(1, -1);
+          const down = [...up].reverse().slice(1,-1);
           base = [...up, ...down];
           break;
         }
         default: base = notes;
       }
-
       base = this.applyOctaves(base);
       base = this.applyRepeat(base);
       return base;
     }
-
   }
 }).mount("#app");
 </script>
